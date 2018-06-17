@@ -1,0 +1,29 @@
+{
+  "name": "koa-controller",
+  "version": "0.1.0",
+  "description": "koa middleware for wrapping controller",
+  "main": "index.js",
+  "directories": {
+    "example": "examples"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/purple-seal/koa-controller.git"
+  },
+  "keywords": [
+    "koa",
+    "controller"
+  ],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/purple-seal/koa-controller/issues"
+  },
+  "homepage": "https://github.com/purple-seal/koa-controller#readme",
+  "devDependencies": {
+    "jest": "^23.1.0"
+  }
+}
