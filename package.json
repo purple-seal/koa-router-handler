@@ -1,7 +1,7 @@
 {
-  "name": "koa-controller",
+  "name": "koa-router-handler",
   "version": "0.1.0",
-  "description": "koa middleware for wrapping controller",
+  "description": "koa middleware for wrapping router handler",
   "main": "index.js",
   "directories": {
     "example": "examples"
