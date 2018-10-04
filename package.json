@@ -1,6 +1,6 @@
 {
   "name": "koa-router-handler",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "koa middleware for wrapping router handler",
   "main": "index.js",
   "directories": {
@@ -11,7 +11,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/purple-seal/koa-controller.git"
+    "url": "git+https://github.com/purple-seal/koa-router-handler.git"
   },
   "keywords": [
     "koa",
@@ -20,9 +20,9 @@
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/purple-seal/koa-controller/issues"
+    "url": "https://github.com/purple-seal/koa-router-handler/issues"
   },
-  "homepage": "https://github.com/purple-seal/koa-controller#readme",
+  "homepage": "https://github.com/purple-seal/koa-router-handler#readme",
   "devDependencies": {
     "jest": "^23.1.0"
   }
