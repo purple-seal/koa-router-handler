@@ -5,11 +5,15 @@ class HttpError {
   }
 }
 
+function validatePattern(pattern, value) {
+  return pattern.test(value) && pattern.exec(value)[0] === value
+}
+
 function hasError (key, validation, params) {
   const value = params[key]
   return (validation.required && key in params === false
     || validation.type && typeof value !== validation.type
-    || validation.pattern && !validation.pattern.test(value))
+    || validation.pattern && validatePattern(validation.pattern, value))
 }
 
 function createErrorMsg (key, validation, params) {
