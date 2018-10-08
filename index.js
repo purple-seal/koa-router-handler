@@ -13,7 +13,7 @@ function hasError (key, validation, params) {
   const value = params[key]
   return (validation.required && key in params === false
     || validation.type && typeof value !== validation.type
-    || validation.pattern && validatePattern(validation.pattern, value))
+    || validation.pattern && !validatePattern(validation.pattern, value))
 }
 
 function createErrorMsg (key, validation, params) {
