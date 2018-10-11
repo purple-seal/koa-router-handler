@@ -67,7 +67,7 @@ function wrapHandler (handler, { validations, createErrorBody } = {}) {
       }
       if (e instanceof HttpError) {
         ctx.status = e.status
-        ctx.body = e.message
+        ctx.body = { message: e.message }
       } else {
         const message = 'Internal server error'
         ctx.status = 500
