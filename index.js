@@ -11,9 +11,10 @@ function validatePattern(pattern, value) {
 
 function hasError (key, validation, params) {
   const value = params[key]
-  return (validation.required && key in params === false
-    || validation.type && typeof value !== validation.type
-    || validation.pattern && !validatePattern(validation.pattern, value))
+  const hasValue = key in params === false
+  return (validation.required && hasValue
+    || (hasValue && validation.type && typeof value !== validation.type)
+    || (hasValue && validation.pattern && !validatePattern(validation.pattern, value)))
 }
 
 function createErrorMsg (key, validation, params) {
