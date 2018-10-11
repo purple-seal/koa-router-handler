@@ -11,7 +11,7 @@ function validatePattern(pattern, value) {
 
 function hasError (key, validation, params) {
   const value = params[key]
-  const hasValue = key in params === false
+  const hasValue = key in params
   return (validation.required && hasValue
     || (hasValue && validation.type && typeof value !== validation.type)
     || (hasValue && validation.pattern && !validatePattern(validation.pattern, value)))
@@ -19,7 +19,7 @@ function hasError (key, validation, params) {
 
 function createErrorMsg (key, validation, params) {
   const value = params[key]
-  const hasValue = key in params === false
+  const hasValue = key in params
   if (validation.required && key in params === false) {
      return `Required field missing: ${key}`
   }
