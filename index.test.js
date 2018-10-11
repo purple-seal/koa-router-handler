@@ -48,6 +48,50 @@ describe('wrapper for router handler', () => {
     expect(ctx.body).toEqual('The value a is not expected type: number.')
   })
 
+  test('check validation of pattern', async () => {
+    const handler = wrap((params) => ({ data: 'ok' }), {
+      validations: {
+        c: {
+          pattern: /([0-9]+,?)+/
+        }
+      },
+      createErrorBody: (key, { status, message}) => ({
+        code: 102,
+        message
+      })
+    })
+    const ctx = {
+      method: 'GET',
+      query: { 'c': 'a,b' }
+    }
+    await handler(ctx)
+
+    expect(ctx.status).toEqual(400)
+    expect(ctx.body).toHaveProperty('code', 102)
+    expect(ctx.body).toHaveProperty('message', 'The value c has not expected pattern: /([0-9]+,?)+/.')
+  })
+
+  test('pass checking validation if the value is none', async () => {
+    const handler = wrap((params) => ({ data: 'ok' }), {
+      validations: {
+        c: {
+          pattern: /([0-9]+,?)+/
+        }
+      },
+      createErrorBody: (key, { status, message}) => ({
+        code: 102,
+        message
+      })
+    })
+    const ctx = {
+      method: 'GET',
+      query: { 'a': 'OK' }
+    }
+    await handler(ctx)
+
+    expect(ctx.body).toHaveProperty('data', 'ok')
+  })
+
   test('check validation with "createErrorBody"', async () => {
     const handler = wrap((params) => ({ data: params['a'] }), {
       validations: {
