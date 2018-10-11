@@ -19,13 +19,14 @@ function hasError (key, validation, params) {
 
 function createErrorMsg (key, validation, params) {
   const value = params[key]
+  const hasValue = key in params === false
   if (validation.required && key in params === false) {
      return `Required field missing: ${key}`
   }
-  if (validation.type && typeof value !== validation.type) {
+  if (hasValue && validation.type && typeof value !== validation.type) {
     return `The value ${key} is not expected type: ${validation.type}.`
   }
-  if (validation.pattern && !validation.pattern.test(value)) {
+  if (hasValue && validation.pattern && !validation.pattern.test(value)) {
     return `The value ${key} has not expected pattern: ${validation.pattern}.`
   }
 
