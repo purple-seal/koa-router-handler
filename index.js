@@ -1,40 +1,61 @@
 class HttpError {
-  constructor (status, message) {
+  constructor(status, message) {
     this.status = status
     this.message = message
   }
 }
 
+class ValidationError {
+  constructor(type) {
+    this.type = type
+  }
+
+  createErrorMsg(key, validation) {
+    if (this.type === 'required') {
+      return `Required field missing: ${key}`
+    }
+    if (this.type === 'type') {
+      return `The value ${key} is not expected type: ${validation.type}.`
+    }
+    if (this.type === 'pattern') {
+      return `The value ${key} has not expected pattern: ${validation.pattern}.`
+    }
+  }
+}
+
 function validatePattern(pattern, value) {
-  return pattern.test(value) && pattern.exec(value)[0] === value
+  return pattern.test(value) && pattern.exec(value)[0] === String(value)
 }
 
-function hasError (key, validation, params) {
-  const value = params[key]
-  const hasValue = key in params
-  return (validation.required && !hasValue
-    || (hasValue && validation.type && typeof value !== validation.type)
-    || (hasValue && validation.pattern && !validatePattern(validation.pattern, value)))
+function hasRequiredError(validation, hasValue) {
+  return validation.required && !hasValue
 }
 
-function createErrorMsg (key, validation, params) {
+function hasTypeError(validation, value, hasValue) {
+  return hasValue && validation.type && typeof value !== validation.type
+}
+
+function hasPatternError(validation, value, hasValue) {
+  return hasValue && validation.pattern && !validatePattern(validation.pattern, value)
+}
+
+function findError(key, validation, params) {
   const value = params[key]
   const hasValue = key in params
-  if (validation.required && !hasValue) {
-     return `Required field missing: ${key}`
+  if (hasRequiredError(validation, hasValue)) {
+    return new ValidationError('required')
   }
-  if (hasValue && validation.type && typeof value !== validation.type) {
-    return `The value ${key} is not expected type: ${validation.type}.`
+  if (hasTypeError(validation, value, hasValue)) {
+    return new ValidationError('type')
   }
-  if (hasValue && validation.pattern && !validation.pattern.test(value)) {
-    return `The value ${key} has not expected pattern: ${validation.pattern}.`
+  if (hasPatternError(validation, value, hasValue)) {
+    return new ValidationError('pattern')
   }
-
   return false
 }
 
-function wrapHandler (handler, { validations, createErrorBody } = {}) {
-  return async function controllerHandler (ctx) {
+function wrapHandler(handler, {validations, createErrorBody} = {}) {
+  return async function controllerHandler(ctx) {
     const method = ctx.method.toUpperCase()
     let params
     if (method === 'GET') {
@@ -51,12 +72,16 @@ function wrapHandler (handler, { validations, createErrorBody } = {}) {
 
     try {
       if (validations) {
-        const key = Object.keys(validations).find(k => hasError(k, validations[k], params))
-        if (key) {
-          const msg = createErrorMsg(key, validations[key], params)
-          ctx.status = 400
-          ctx.body = createErrorBody ? createErrorBody(key, { status: 400, message: msg }) : msg
-          return
+        const keys = Object.keys(validations)
+        for (let i = 0; i < keys.length; i++) {
+          const k = keys[i]
+          const error = findError(k, validations[k], params)
+          if (error) {
+            const msg = error.createErrorMsg(k, validations[k])
+            ctx.status = 400
+            ctx.body = createErrorBody ? createErrorBody({status: 400, message: msg, key: k}) : msg
+            return
+          }
         }
       }
 
@@ -66,12 +91,13 @@ function wrapHandler (handler, { validations, createErrorBody } = {}) {
         console.error(e)
       }
       if (e instanceof HttpError) {
+        const msg = e.message
         ctx.status = e.status
-        ctx.body = { message: e.message }
+        ctx.body = createErrorBody ? createErrorBody({status: e.status, message: msg}) : msg
       } else {
         const message = 'Internal server error'
         ctx.status = 500
-        ctx.body = createErrorBody ? createErrorBody(null, { status: 500, message }) : message
+        ctx.body = createErrorBody ? createErrorBody({status: 500, message}) : message
       }
     }
   }

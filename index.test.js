@@ -55,7 +55,7 @@ describe('wrapper for router handler', () => {
           pattern: /([0-9]+,?)+/
         }
       },
-      createErrorBody: (key, { status, message}) => ({
+      createErrorBody: ({ status, message, key }) => ({
         code: 102,
         message
       })
@@ -71,6 +71,27 @@ describe('wrapper for router handler', () => {
     expect(ctx.body).toHaveProperty('message', 'The value c has not expected pattern: /([0-9]+,?)+/.')
   })
 
+  test('check validation of pattern for valid number', async () => {
+    const handler = wrap((params) => ({ data: 'ok' }), {
+      validations: {
+        c: {
+          pattern: /[0-9]+/
+        }
+      },
+      createErrorBody: ({ status, message, key}) => ({
+        code: 102,
+        message
+      })
+    })
+    const ctx = {
+      method: 'GET',
+      query: { 'c': 12345 }
+    }
+    await handler(ctx)
+
+    expect(ctx.status).toBeUndefined()
+  })
+
   test('pass checking validation if the value is none', async () => {
     const handler = wrap((params) => ({ data: 'ok' }), {
       validations: {
@@ -78,7 +99,7 @@ describe('wrapper for router handler', () => {
           pattern: /([0-9]+,?)+/
         }
       },
-      createErrorBody: (key, { status, message}) => ({
+      createErrorBody: ({ status, message, key }) => ({
         code: 102,
         message
       })
@@ -99,7 +120,7 @@ describe('wrapper for router handler', () => {
           required: true
         }
       },
-      createErrorBody: (key, { status, message}) => ({
+      createErrorBody: ({ status, message, key }) => ({
         code: 102,
         message
       })
