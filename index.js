@@ -85,7 +85,13 @@ function wrapHandler(handler, {validations, createErrorBody} = {}) {
         }
       }
 
-      ctx.body = await handler(params)
+      const response = await handler(params)
+      if (response) {
+        ctx.status = 200
+        ctx.body = response
+      } else {
+        ctx.status = 204
+      }
     } catch (e) {
       if (process.env.NODE_ENV !== 'production') {
         console.error(e)
