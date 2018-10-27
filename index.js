@@ -1,7 +1,7 @@
 class HttpError {
-  constructor(status, message) {
+  constructor(status, error) {
     this.status = status
-    this.message = message
+    this.error = error
   }
 }
 
@@ -91,9 +91,9 @@ function wrapHandler(handler, {validations, createErrorBody} = {}) {
         console.error(e)
       }
       if (e instanceof HttpError) {
-        const msg = e.message
+        const error = e.error
         ctx.status = e.status
-        ctx.body = createErrorBody ? createErrorBody({status: e.status, message: msg}) : msg
+        ctx.body = createErrorBody ? createErrorBody({status: e.status, error}) : error
       } else {
         const message = 'Internal server error'
         ctx.status = 500
