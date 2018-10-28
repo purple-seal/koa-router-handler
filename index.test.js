@@ -89,7 +89,7 @@ describe('wrapper for router handler', () => {
     }
     await handler(ctx)
 
-    expect(ctx.status).toBeUndefined()
+    expect(ctx.status).toEqual(200)
   })
 
   test('pass checking validation if the value is none', async () => {
