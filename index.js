@@ -85,7 +85,7 @@ function wrapHandler(handler, {validations, createErrorBody} = {}) {
         }
       }
 
-      const response = await handler(params)
+      const response = await handler(params, ctx)
       if (response) {
         ctx.status = 200
         ctx.body = response
