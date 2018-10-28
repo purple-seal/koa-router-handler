@@ -17,8 +17,8 @@
     "koa",
     "controller"
   ],
-  "author": "",
-  "license": "ISC",
+  "author": "purple-seal",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/purple-seal/koa-router-handler/issues"
   },
