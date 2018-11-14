@@ -54,7 +54,11 @@ function findError(key, validation, params) {
   return false
 }
 
-function wrapHandler(handler, {validations, createErrorBody} = {}) {
+function dummyCatchHandler (e) {
+  throw e
+}
+
+function wrapHandler(handler, {validations, createErrorBody, catchHandler = dummyCatchHandler} = {}) {
   return async function controllerHandler(ctx) {
     const method = ctx.method.toUpperCase()
     let params
@@ -85,7 +89,7 @@ function wrapHandler(handler, {validations, createErrorBody} = {}) {
         }
       }
 
-      const response = await handler(params, ctx)
+      const response = await handler(params, ctx).catch(catchHandler)
       if (response) {
         ctx.status = 200
         ctx.body = response
