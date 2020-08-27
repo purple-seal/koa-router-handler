@@ -58,21 +58,24 @@ function dummyCatchHandler (e) {
   throw e
 }
 
-function wrapHandler(handler, {validations, createErrorBody, catchHandler = dummyCatchHandler} = {}) {
-  return async function controllerHandler(ctx) {
-    const method = ctx.method.toUpperCase()
-    let params
+function getParamsFromContext (ctx) {
+  const method = ctx.method.toUpperCase()
     if (method === 'GET') {
-      params = {
+      return {
         ...ctx.query,
         ...ctx.params
       }
     } else {
-      params = {
+      return {
         ...ctx.request.body,
         ...ctx.params
       }
     }
+}
+
+function wrapHandler(handler, { validations, createErrorBody, catchHandler = dummyCatchHandler } = {}) {
+  return async function controllerHandler(ctx) {
+    const params = getParamsFromContext(ctx)
 
     try {
       if (validations) {
@@ -113,7 +116,23 @@ function wrapHandler(handler, {validations, createErrorBody, catchHandler = dumm
   }
 }
 
+
+function wrapMiddleware (handler) {
+  return async function controllerHandler(ctx, next) {
+    const params = getParamsFromContext(ctx)
+    const response = await handler(params)
+    if (response) {
+      ctx.status = response.status || 200
+      ctx.body = response.message
+    } else {
+      return next()
+    }
+  }
+}
+
+
 module.exports = {
   wrap: wrapHandler,
+  wrapMiddleware,
   HttpError
 }
